@@ -1,0 +1,19 @@
+AllCops:
+  TargetRubyVersion: 2.5
+  Include:
+    - lib/
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Style/CommentedKeyword:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

@@ -1,0 +1,148 @@
+# Encoding: UTF-8
+#
+# Gem Name:: supermarket_sync
+# Module:: Sync
+#
+# Copyright (C) 2018 Brian Dwyer - Intelligent Digital Services
+#
+# All rights reserved - Do Not Redistribute
+#
+
+require 'chef/http/json_input'
+require 'chef/http/json_output'
+require 'chef/http/remote_request_id'
+require 'chef/http/simple_json'
+require 'chef/cookbook_site_streaming_uploader'
+require 'mixlib/cli'
+require 'supermarket_sync/notifier'
+
+module SupermarketSync
+  module Sync
+    module_function
+
+    def run!
+      Config.supermarkets.each do |name, cfg|
+        puts "Synchronizing #{name}"
+
+        # => Set Configuration
+        configure(cfg)
+
+        # => Parse the Cookbooks List
+        cookbooks = Array(Util.parse_json(Config.cookbooks_file)[:cookbooks])
+
+        cookbooks.each do |cookbook|
+          cookbook = cookbook.keys.first if cookbook.is_a?(Hash)
+          puts "Checking #{cookbook}"
+          # => Grab Source Metadata
+          source_meta = begin
+            source.get("/api/v1/cookbooks/#{cookbook}")
+          rescue Net::HTTPServerException => e
+            raise e unless e.response.code == '404'
+            # => Cookbook not on Public Supermarket
+            next
+          end
+          # => Grab Latest Available Version Number
+          latest = ::Gem::Version.new(::File.basename(source_meta['latest_version']))
+
+          # => Grab Destination Metadata
+          dest_meta = begin
+            dest.get("/api/v1/cookbooks/#{cookbook}")
+          rescue Net::HTTPServerException => e
+            raise e unless e.response.code == '404'
+            # => Cookbook not found -- Initial Upload
+            {}['latest_version'] = '0.0.0'
+          end
+          # => Determine Current Version
+          current = ::Gem::Version.new(::File.basename(dest_meta['latest_version']))
+
+          puts "Latest #{latest}"
+          puts "Current: #{current}"
+          if latest > current
+            # => DEBUG
+            puts 'Need to update!!!'
+            puts "Source: #{latest}"
+            puts "Destination: #{current}"
+
+            # => Retrieve the Cookbook
+            tgz = source.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
+
+            # => Upload the Cookbook
+            r = upload(source_meta['category'], tgz)
+            puts r.inspect
+
+            # => Remove the Tempfile
+            begin
+              retries ||= 2
+              ::File.delete(tgz)
+            rescue
+              raise e if (retries -= 1).negative?
+              puts "#{e.class}::#{e.message}"
+              puts 'Could not delete Tempfile... Retrying'
+              sleep 2
+              retry
+            end
+            @notify&.updated&.push(source: source_meta, dest: dest_meta)
+          end
+          # => Identify Deprecated Cookbooks
+          next unless source_meta['deprecated'] # && !dest_meta['deprecated']
+          @notify&.deprecated&.push(source: source_meta, dest: dest_meta)
+        end
+
+        # => Send Notifications
+        @notify&.send!
+      end
+    end
+
+    #
+    # => Configuration Context
+    #
+    private def configure(context) # rubocop: disable AbcSize, MethodLength
+      Chef::Config.tap do |cfg|
+        cfg.chef_server_url = context[:url]  || ENV['SM_URL']
+        cfg.node_name       = context[:user] || ENV['SM_USER']
+        cfg.client_key      = context[:key]  || ENV['SM_KEY']
+        cfg.ssl_verify_mode = :verify_none
+      end
+
+      @notify = Notifier.new do |cfg|
+        cfg.url      = Config.notification[:url]
+        cfg.channels = Config.notification[:channels]
+        cfg.username = Config.notification[:username]
+      end
+
+      source context[:source] || Config.source
+      dest   context[:url]
+    end
+
+    #
+    # => API Clients
+    #
+    private def source(url = nil)
+      url ||= @source&.url
+      raise ArgumentError, 'No URL supplied!' unless url
+      return @source if @source&.url == url
+      @source = Chef::HTTP::SimpleJSON.new(url)
+    end
+
+    private def dest(url = nil)
+      url ||= @dest&.url
+      raise ArgumentError, 'No URL supplied!' unless url
+      return @dest if @dest&.url == url
+      @dest = Chef::HTTP::SimpleJSON.new(url)
+    end
+
+    private def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
+      uri = URI.parse(dest.url)
+      uri.path = '/api/v1/cookbooks'
+      resp = Chef::CookbookSiteStreamingUploader.post(
+        uri.to_s, Chef::Config[:node_name], Chef::Config[:client_key],
+        tarball: ::File.open(tarball),
+        cookbook: Chef::JSONCompat.to_json(category: category)
+      )
+      return unless resp.code != '200'
+      msg = Chef::JSONCompat.to_json_pretty(Chef::JSONCompat.parse(resp.body)) rescue resp.body # rubocop: disable RescueModifier, LineLength
+      puts resp.inspect
+      raise "\nSupermarket Upload Error:\n#{msg}"
+    end
+  end
+end
