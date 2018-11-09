@@ -3,9 +3,9 @@
 # Gem Name:: supermarket_sync
 # Module:: Notifier
 #
-# Copyright (C) 2018 Brian Dwyer - Intelligent Digital Services
+# The MIT License (MIT)
 #
-# All rights reserved - Do Not Redistribute
+# Copyright:: 2018, Brian Dwyer - Broadridge Financial Solutions
 #
 
 require 'slack-notifier'

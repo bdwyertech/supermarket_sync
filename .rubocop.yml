@@ -1,7 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.5
   Include:
-    - lib/
+    - lib/*
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
