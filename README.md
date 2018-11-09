@@ -24,10 +24,25 @@ Or install it yourself as:
 
 ## Usage
 
+```shell
+Usage: supermarket_sync (options)
+    -c, --config CONFIG              Path to the configuration file to use
+        --cookbooks-json CONFIG      List of cookbooks to synchronize
+```
+
+You can supply individual configuration for supermarkets invidivually via the configuration file.
+
+Otherwise, you can configure global Chef parameters via environment variables.  This may prove handy in a CI pipeline scenario.
+
+```
+export SM_USER='supermarket_user'
+export SM_KEY='/path/to/my/key.pem'
+```
+
 #### Configuration Samples
 
+`config.json`
 ```json
-# Config.json
 {
   "notification": {
     "url": "https://hooks.slack.com/services/T23CHARKH/blah/blahbetyblah",
@@ -52,8 +67,8 @@ Or install it yourself as:
 }
 ```
 
+`cookbooks.json`
 ```json
-# cookbooks.json
 {
   "cookbooks": [
     "apt",

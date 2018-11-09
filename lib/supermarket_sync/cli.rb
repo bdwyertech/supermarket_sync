@@ -28,7 +28,7 @@ module SupermarketSync
       option :config_file,
              short: '-c CONFIG',
              long: '--config CONFIG',
-             description: 'The configuration file to use, as opposed to command-line parameters (optional)'
+             description: 'Path to the configuration file to use'
 
       option :cookbooks_file,
              long: '--cookbooks-json CONFIG',
