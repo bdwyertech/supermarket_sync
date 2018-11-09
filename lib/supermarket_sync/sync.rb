@@ -97,7 +97,7 @@ module SupermarketSync
     #
     private def configure(context) # rubocop: disable AbcSize, MethodLength
       Chef::Config.tap do |cfg|
-        cfg.chef_server_url = context[:url]  || ENV['SM_URL']
+        cfg.chef_server_url = context[:url]
         cfg.node_name       = context[:user] || ENV['SM_USER']
         cfg.client_key      = context[:key]  || ENV['SM_KEY']
         cfg.ssl_verify_mode = :verify_none

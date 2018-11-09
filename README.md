@@ -54,14 +54,12 @@ export SM_KEY='/path/to/my/key.pem'
   },
   "supermarkets": {
     "Enterprise BU1": {
-      "url": "https://supermarket.bu1.contoso.net",
-      "user": "bu_admin",
-      "key": "/path/to/bu1_admin_key.pem"
+      "url": "https://supermarket.bu1.contoso.net"
     },
     "Enterprise BU2": {
       "url": "https://supermarket.bu2.contoso.net",
       "user": "bu2_admin",
-      "key": "/path/to/bu2_admin_key.pem"
+      "key": "/path/to/bu2/admin/key.pem"
     }
   }
 }
