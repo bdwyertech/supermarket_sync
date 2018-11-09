@@ -17,11 +17,14 @@ require 'mixlib/cli'
 require 'supermarket_sync/notifier'
 
 module SupermarketSync
+  #
+  # => Supermarket Synchronization Logic Controller
+  #
   module Sync
     module_function
 
-    def run!
-      Config.supermarkets.each do |name, cfg|
+    def run! # rubocop: disable AbcSize, CyclomaticComplexity, MethodLength, PerceivedComplexity
+      Config.supermarkets.each do |name, cfg| # rubocop: disable BlockLength
         puts "Synchronizing #{name}"
 
         # => Set Configuration
@@ -30,7 +33,7 @@ module SupermarketSync
         # => Parse the Cookbooks List
         cookbooks = Array(Util.parse_json(Config.cookbooks_file)[:cookbooks])
 
-        cookbooks.each do |cookbook|
+        cookbooks.each do |cookbook| # rubocop: disable BlockLength
           cookbook = cookbook.keys.first if cookbook.is_a?(Hash)
           puts "Checking #{cookbook}"
           # => Grab Source Metadata
@@ -38,7 +41,7 @@ module SupermarketSync
             source.get("/api/v1/cookbooks/#{cookbook}")
           rescue Net::HTTPServerException => e
             raise e unless e.response.code == '404'
-            # => Cookbook not on Public Supermarket
+            puts 'Cookbook not available on Source Supermarket'
             next
           end
           # => Grab Latest Available Version Number
@@ -55,11 +58,8 @@ module SupermarketSync
           # => Determine Current Version
           current = ::Gem::Version.new(::File.basename(dest_meta['latest_version']))
 
-          puts "Latest #{latest}"
-          puts "Current: #{current}"
           if latest > current
-            # => DEBUG
-            puts 'Need to update!!!'
+            puts 'Updating...'
             puts "Source: #{latest}"
             puts "Destination: #{current}"
 
@@ -67,14 +67,13 @@ module SupermarketSync
             tgz = source.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
 
             # => Upload the Cookbook
-            r = upload(source_meta['category'], tgz)
-            puts r.inspect
+            # upload(source_meta['category'], tgz)
 
             # => Remove the Tempfile
             begin
               retries ||= 2
               ::File.delete(tgz)
-            rescue
+            rescue => e # rubocop: disable RescueStandardError
               raise e if (retries -= 1).negative?
               puts "#{e.class}::#{e.message}"
               puts 'Could not delete Tempfile... Retrying'
@@ -104,10 +103,12 @@ module SupermarketSync
         cfg.ssl_verify_mode = :verify_none
       end
 
-      @notify = Notifier.new do |cfg|
-        cfg.url      = Config.notification[:url]
-        cfg.channels = Config.notification[:channels]
-        cfg.username = Config.notification[:username]
+      if Config.notification.any?
+        @notify = Notifier.new do |cfg|
+          cfg.url      = Config.notification[:url]
+          cfg.channels = Config.notification[:channels]
+          cfg.username = Config.notification[:username]
+        end
       end
 
       source context[:source] || Config.source
@@ -139,7 +140,7 @@ module SupermarketSync
         tarball: ::File.open(tarball),
         cookbook: Chef::JSONCompat.to_json(category: category)
       )
-      return unless resp.code != '200'
+      return if %w[200 201].include?(resp.code)
       msg = Chef::JSONCompat.to_json_pretty(Chef::JSONCompat.parse(resp.body)) rescue resp.body # rubocop: disable RescueModifier, LineLength
       puts resp.inspect
       raise "\nSupermarket Upload Error:\n#{msg}"
