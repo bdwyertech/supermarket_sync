@@ -28,7 +28,7 @@ module SupermarketSync
     def send!
       messages = [build_deprecated, build_updated].compact
       return unless messages.any?
-      Array(@channel).each do |channel|
+      Array(@channels).each do |channel|
         slack.ping '', attachments: messages, channel: channel
       end
     end
