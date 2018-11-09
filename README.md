@@ -29,7 +29,7 @@ Or install it yourself as:
 ```json
 # Config.json
 {
-  "notify": {
+  "notification": {
     "url": "https://hooks.slack.com/services/T23CHARKH/blah/blahbetyblah",
     "username": "Chef - Supermarket Sync",
     "channels": [
