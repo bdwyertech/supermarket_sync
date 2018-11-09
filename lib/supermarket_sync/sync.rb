@@ -67,7 +67,7 @@ module SupermarketSync
             tgz = source.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
 
             # => Upload the Cookbook
-            # upload(source_meta['category'], tgz)
+            upload(source_meta['category'], tgz)
 
             # => Remove the Tempfile
             begin
