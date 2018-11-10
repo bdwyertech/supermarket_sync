@@ -83,10 +83,10 @@ module SupermarketSync
             @notify&.updated&.push(source: source_meta, dest: dest_meta)
           end
           # => Identify Deprecated Cookbooks
-          next unless source_meta['deprecated'] # && !dest_meta['deprecated']
+          next unless source_meta['deprecated'] && !dest_meta['deprecated']
           @notify&.deprecated&.push(source: source_meta, dest: dest_meta)
         end
-
+      ensure
         # => Send Notifications
         @notify&.send!
       end
