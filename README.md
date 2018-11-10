@@ -2,25 +2,9 @@
 * Ruby Gem to programmatically synchronize Chef Supermarkets
 
 ## Background
-This gem was built from a need to synchronize a private, internal Chef Supermarket from the Public Chef Supermarket.
+This gem was built from a need to synchronize approved cookbooks to a private, internal Chef Supermarket from the Public Chef Supermarket.
 
-At the same time, being able to send notifications of changes and deprecations was also desired.
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'supermarket_sync'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install supermarket_sync
+It was also desired to send notifications upon changes and deprecations.
 
 ## Usage
 
@@ -30,14 +14,20 @@ Usage: supermarket_sync (options)
         --cookbooks-json CONFIG      List of cookbooks to synchronize
 ```
 
-You can supply individual configuration for supermarkets invidivually via the configuration file.
+* Supermarkets can be configured individually via the configuration file.
 
-Otherwise, you can configure global Chef parameters via environment variables.  This may prove handy in a CI pipeline scenario.
+* If left unspecified, global Supermarket parameters can be passed in via environment variables.
 
 ```
+# Set Supermarket Globals
 export SM_USER='supermarket_user'
 export SM_KEY='/path/to/my/key.pem'
+
+# Sync the Supermarkets
+supermarket_sync -c config.json --cookbooks-json cookbooks.json
 ```
+
+* Slack notifications are optional and can be configured via notification hash in `config.json`.
 
 #### Configuration Samples
 
@@ -77,7 +67,21 @@ export SM_KEY='/path/to/my/key.pem'
 }
 ```
 
-####
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'supermarket_sync'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install supermarket_sync
 
 
 ## Development
