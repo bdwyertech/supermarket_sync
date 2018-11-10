@@ -3,7 +3,9 @@ AllCops:
   DisplayCopNames: true
   TargetRubyVersion: 2.5
   Include:
-    - 'lib/**/*'
+    - lib/
+    - Gemfile
+    - Rakefile
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
