@@ -38,23 +38,23 @@ module SupermarketSync
           puts "Checking #{cookbook}"
           # => Grab Source Metadata
           source_meta = begin
-            source.get("/api/v1/cookbooks/#{cookbook}")
-          rescue Net::HTTPServerException => e
-            raise e unless e.response.code == '404'
-            puts 'Cookbook not available on Source Supermarket'
-            next
-          end
+                          source.get("/api/v1/cookbooks/#{cookbook}")
+                        rescue Net::HTTPServerException => e
+                          raise e unless e.response.code == '404'
+                          puts 'Cookbook not available on Source Supermarket'
+                          next
+                        end
           # => Grab Latest Available Version Number
           latest = ::Gem::Version.new(::File.basename(source_meta['latest_version']))
 
           # => Grab Destination Metadata
           dest_meta = begin
-            dest.get("/api/v1/cookbooks/#{cookbook}")
-          rescue Net::HTTPServerException => e
-            raise e unless e.response.code == '404'
-            # => Cookbook not found -- Initial Upload
-            {}['latest_version'] = '0.0.0'
-          end
+                        dest.get("/api/v1/cookbooks/#{cookbook}")
+                      rescue Net::HTTPServerException => e
+                        raise e unless e.response.code == '404'
+                        # => Cookbook not found -- Initial Upload
+                        {}['latest_version'] = '0.0.0'
+                      end
           # => Determine Current Version
           current = ::Gem::Version.new(::File.basename(dest_meta['latest_version']))
 
@@ -92,10 +92,13 @@ module SupermarketSync
       end
     end
 
+    private
+
     #
     # => Configuration Context
     #
-    private def configure(context) # rubocop: disable AbcSize, MethodLength
+
+    def configure(context) # rubocop: disable AbcSize, MethodLength
       Chef::Config.tap do |cfg|
         cfg.chef_server_url = context[:url]
         cfg.node_name       = context[:user] || ENV['SM_USER']
@@ -118,21 +121,21 @@ module SupermarketSync
     #
     # => API Clients
     #
-    private def source(url = nil)
+    def source(url = nil)
       url ||= @source&.url
       raise ArgumentError, 'No URL supplied!' unless url
       return @source if @source&.url == url
       @source = Chef::HTTP::SimpleJSON.new(url)
     end
 
-    private def dest(url = nil)
+    def dest(url = nil)
       url ||= @dest&.url
       raise ArgumentError, 'No URL supplied!' unless url
       return @dest if @dest&.url == url
       @dest = Chef::HTTP::SimpleJSON.new(url)
     end
 
-    private def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
+    def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
       uri = URI.parse(dest.url)
       uri.path = '/api/v1/cookbooks'
       resp = Chef::CookbookSiteStreamingUploader.post(

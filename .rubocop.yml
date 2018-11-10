@@ -1,7 +1,10 @@
 AllCops:
   TargetRubyVersion: 2.5
   Include:
-    - lib/*
+    - lib/**/*
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false

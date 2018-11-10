@@ -54,11 +54,12 @@ module SupermarketSync
       @updated ||= []
     end
 
+    private
+
     #
     # => Message Constructors
     #
-
-    private def build_deprecated # rubocop: disable MethodLength
+    def build_deprecated # rubocop: disable MethodLength
       return unless deprecated.any?
       fields = deprecated.map do |cb|
         {
@@ -71,7 +72,7 @@ module SupermarketSync
       end
 
       {
-        color:  '#FF0000',
+        color: '#FF0000',
         mrkdwn_in: %w[pretext fields],
         fields: fields,
         pretext: <<-MSGBODY.gsub(/^\s+/, '')
@@ -80,7 +81,7 @@ module SupermarketSync
       }
     end
 
-    private def build_updated # rubocop: disable AbcSize, MethodLength
+    def build_updated # rubocop: disable AbcSize, MethodLength
       return unless updated.any?
       rows = updated.map do |cb|
         [
