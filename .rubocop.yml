@@ -1,7 +1,13 @@
 AllCops:
+  DisplayStyleGuide: true
+  DisplayCopNames: true
   TargetRubyVersion: 2.5
   Include:
-    - lib/**/*
+    - 'lib/**/*'
+    - '**/Gemfile'
+    - '**/Rakefile'
+  Exclude:
+    - 'vendor/*'
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
