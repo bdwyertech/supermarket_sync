@@ -54,12 +54,10 @@ module SupermarketSync
       @updated ||= []
     end
 
-    private
-
     #
     # => Message Constructors
     #
-    def build_deprecated # rubocop: disable MethodLength
+    private def build_deprecated # rubocop: disable MethodLength
       return unless deprecated.any?
       fields = deprecated.map do |cb|
         {
@@ -81,7 +79,7 @@ module SupermarketSync
       }
     end
 
-    def build_updated # rubocop: disable AbcSize, MethodLength
+    private def build_updated # rubocop: disable AbcSize, MethodLength
       return unless updated.any?
       rows = updated.map do |cb|
         [

@@ -92,13 +92,11 @@ module SupermarketSync
       end
     end
 
-    private
-
     #
     # => Configuration Context
     #
 
-    def configure(context) # rubocop: disable AbcSize, MethodLength
+    private def configure(context) # rubocop: disable AbcSize, MethodLength
       Chef::Config.tap do |cfg|
         cfg.chef_server_url = context[:url]
         cfg.node_name       = context[:user] || ENV['SM_USER']
@@ -121,21 +119,21 @@ module SupermarketSync
     #
     # => API Clients
     #
-    def source(url = nil)
+    private def source(url = nil)
       url ||= @source&.url
       raise ArgumentError, 'No URL supplied!' unless url
       return @source if @source&.url == url
       @source = Chef::HTTP::SimpleJSON.new(url)
     end
 
-    def dest(url = nil)
+    private def dest(url = nil)
       url ||= @dest&.url
       raise ArgumentError, 'No URL supplied!' unless url
       return @dest if @dest&.url == url
       @dest = Chef::HTTP::SimpleJSON.new(url)
     end
 
-    def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
+    private def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
       uri = URI.parse(dest.url)
       uri.path = '/api/v1/cookbooks'
       resp = Chef::CookbookSiteStreamingUploader.post(
