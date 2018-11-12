@@ -25,10 +25,10 @@ module SupermarketSync
     define_setting :author, 'Brian Dwyer - Broadridge Financial Services'
 
     # => Config File
-    define_setting :config_file, File.join(root, 'config', 'config.json')
+    define_setting :config_file, ENV['SM_SYNC_CONFIG'] || File.join(root, 'config', 'config.json')
 
     # => Cookbooks File
-    define_setting :cookbooks_file, File.join(root, 'config', 'cookbooks.json')
+    define_setting :cookbooks_file, ENV['SM_SYNC_COOKBOOKS'] || File.join(root, 'config', 'cookbooks.json')
 
     # => Supermarket Configuration
     define_setting :supermarkets, {}
