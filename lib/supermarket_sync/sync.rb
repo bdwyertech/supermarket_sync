@@ -38,7 +38,7 @@ module SupermarketSync
           puts "Checking #{cookbook}"
           # => Grab Source Metadata
           source_meta = begin
-                          source.get("/api/v1/cookbooks/#{cookbook}")
+                          src.get("/api/v1/cookbooks/#{cookbook}")
                         rescue Net::HTTPServerException => e
                           raise e unless e.response.code == '404'
                           puts 'Cookbook not available on Source Supermarket'
@@ -64,7 +64,7 @@ module SupermarketSync
             puts "Destination: #{current}"
 
             # => Retrieve the Cookbook
-            tgz = source.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
+            tgz = src.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
 
             # => Upload the Cookbook
             upload(source_meta['category'], tgz) unless Config.read_only
@@ -112,18 +112,18 @@ module SupermarketSync
         end
       end
 
-      source context[:source] || Config.source
-      dest   context[:url]
+      src  context[:source] || Config.source
+      dest context[:url]
     end
 
     #
     # => API Clients
     #
-    private def source(url = nil)
-      url ||= @source&.url
+    def src(url = nil)
+      url ||= @src&.url
       raise ArgumentError, 'No URL supplied!' unless url
-      return @source if @source&.url == url
-      @source = Chef::HTTP::SimpleJSON.new(url)
+      return @src if @src&.url == url
+      @src = Chef::HTTP::SimpleJSON.new(url)
     end
 
     private def dest(url = nil)
