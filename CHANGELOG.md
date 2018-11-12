@@ -2,6 +2,12 @@ SupermarketSync Changelog
 =========================
 This file is used to list changes made in each version of the `supermarket_sync` gem.
 
+v0.1.1 (2016-11-12)
+-------------------
+- Fix for non-existing cookbooks
+- Rename function to avoid potential namespace collision
+- Add a read-only mode for testing purposes
+
 v0.1.0 (2016-11-09)
 -------------------
-- Initial Release TBD
+- Initial Release
