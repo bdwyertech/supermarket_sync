@@ -60,6 +60,7 @@ module SupermarketSync
         cfg.notification   = config[:notification]
         cfg.supermarkets   = config[:supermarkets]
         cfg.source         = config[:source]
+        cfg.read_only      = config[:read_only]
       end
 
       # => Start the Sync

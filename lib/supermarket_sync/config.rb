@@ -44,6 +44,9 @@ module SupermarketSync
                               user: ENV['SM_USER'],
                               key:  ENV['SM_KEY']
 
+    # => Read-Only Mode
+    define_setting :read_only, ENV['SM_SYNC_READONLY']
+
     #
     # Facilitate Dynamic Addition of Configuration Values
     #
