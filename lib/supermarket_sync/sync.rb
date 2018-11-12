@@ -53,7 +53,7 @@ module SupermarketSync
                       rescue Net::HTTPServerException => e
                         raise e unless e.response.code == '404'
                         # => Cookbook not found -- Initial Upload
-                        {}['latest_version'] = '0.0.0'
+                        { 'latest_version' => '0.0.0' }
                       end
           # => Determine Current Version
           current = ::Gem::Version.new(::File.basename(dest_meta['latest_version']))
