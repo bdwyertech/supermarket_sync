@@ -67,7 +67,7 @@ module SupermarketSync
             tgz = src.streaming_request("/api/v1/cookbooks/#{cookbook}/versions/#{latest}/download")
 
             # => Upload the Cookbook
-            upload(source_meta['category'], tgz) unless Config.read_only
+            upload('other', tgz) unless Config.read_only
 
             # => Remove the Tempfile
             begin
