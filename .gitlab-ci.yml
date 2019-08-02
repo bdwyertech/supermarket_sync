@@ -13,7 +13,7 @@ test:Ruby 2.5:
   script:
     - bundle exec rubocop
   tags:
-    - ruby
+    - docker
   except:
     - tags
 
@@ -33,6 +33,6 @@ release:Ruby 2.5:
     paths:
       - ./*.gem
   tags:
-    - ruby
+    - docker
   only:
     - tags
