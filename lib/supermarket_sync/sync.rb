@@ -136,7 +136,7 @@ module SupermarketSync
     private def upload(category, tarball) # rubocop: disable AbcSize, MethodLength
       uri = URI.parse(dest.url)
       uri.path = '/api/v1/cookbooks'
-      resp = Chef::CookbookSiteStreamingUploader.post(
+      resp = Chef::Knife::Core::CookbookSiteStreamingUploader.post(
         uri.to_s, Chef::Config[:node_name], Chef::Config[:client_key],
         tarball: ::File.open(tarball),
         cookbook: Chef::JSONCompat.to_json(category: category)
