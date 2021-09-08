@@ -5,7 +5,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright:: 2018, Brian Dwyer - Broadridge Financial Solutions
+# Copyright:: 2021, Brian Dwyer - Broadridge Financial Solutions
 #
 
 require 'slack-notifier'
