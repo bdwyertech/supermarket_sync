@@ -12,7 +12,7 @@ require 'chef/http/json_input'
 require 'chef/http/json_output'
 require 'chef/http/remote_request_id'
 require 'chef/http/simple_json'
-require 'chef/cookbook_site_streaming_uploader'
+require 'chef/knife/core/cookbook_site_streaming_uploader'
 require 'mixlib/cli'
 require 'supermarket_sync/notifier'
 
