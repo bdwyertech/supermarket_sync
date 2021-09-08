@@ -32,4 +32,5 @@ jobs:
         run: |
           gem install dpl --no-document
           find . -type f -exec chmod o--w "{}" \;
-          dpl --provider=rubygems --api-key=$RUBYGEMS_API_KEY --gem=supermarket_sync
+
+      - run: dpl --provider=rubygems --api-key=$RUBYGEMS_API_KEY --gem=supermarket_sync
