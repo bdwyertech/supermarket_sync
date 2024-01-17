@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # => Dependencies
-  spec.add_runtime_dependency 'knife', '>= 17.1', '< 18.0'
+  spec.add_runtime_dependency 'knife', '>= 17.1', '< 19.0'
   spec.add_runtime_dependency 'mixlib-cli', '>= 2.1.1', '< 3.0'
   spec.add_runtime_dependency 'slack-notifier', '~> 2.4.0'
 
